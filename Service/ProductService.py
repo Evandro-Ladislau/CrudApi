@@ -1,5 +1,3 @@
-import sys 
-sys.path.append(r'C:\Users\Evandro Ladislau\Documents\plataforma\CrudApi')
 from Model.Product import Product
 
 class ProductService:

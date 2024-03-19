@@ -1,5 +1,3 @@
-import sys 
-sys.path.append(r'C:\Users\Evandro Ladislau\Documents\plataforma\CrudApi')
 import sqlite3
 from Storage.ProductStorage import ProductStorage
 from Model.Product import Product
@@ -20,8 +18,7 @@ class ProductController:
         query = "SELECT id, name, price FROM products"
         response = self.connectionDB.cursor.execute(query)
         data = response.fetchall()
-        for row in data:
-            print(row)
+        return data
     
     def select_by_id(self, id):
         query = "SELECT id, name, price FROM products WHERE id=?"
@@ -58,16 +55,6 @@ class ProductController:
             print(f"SQLite error deleting product: {e}")
             return False
             
-
-            
-            
-controller = ProductController()
-#controller.connectionDB.verifyTable()
-#telefone = Product(3,'Computer Gamer', 'ADM RYZEN 5500', 3000)
-#controller.insertProduct(telefone)
-#controller.selectProducts()
-controller.delete_by_id(34)
-
 
 
 
