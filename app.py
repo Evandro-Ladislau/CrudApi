@@ -1,24 +1,58 @@
 from flask import Flask, request, jsonify
 from Model.Product import Product
+from Service.ProductService import ProductService
 
 app = Flask(__name__)
 
-from Controller.ProductController import ProductController
-@app.route("/", methods=['GET'])
-def list():
-    product_controller = ProductController()
-    return product_controller.select()
+@app.route("/list", methods=['GET'])
+def list_products():
+    service = ProductService()
+    return service.select_products()
+
+@app.route("/product/<int:product_id>", methods=['GET'])
+def get_product_by_id(product_id):
+    service = ProductService()
+    product = service.select_product(product_id)
+    if product:
+        return jsonify({
+            "id": product.id,
+            "name": product.name,
+            "description": product.description,
+            "price": product.price
+            }), 200
+    else:
+        return jsonify({"error": "Product not exist"}), 400
 
 @app.route("/insert", methods=['POST'])
-def insert():
+def insert_product():
     data = request.json
     if data:
         product = Product(id=data.get('id'), name=data.get('name'), description=data.get('description'), price=data.get('price'))
-        product_controller = ProductController()
-        product_controller.insert(product)
-        return jsonify({"message": "Produto inserido com sucesso"}), 201
+        service = ProductService()
+        service.validate_insert_product(product)
+        return jsonify({"message": "Product inserted successfully"}), 201
     else:
-        return jsonify({"error": "Dados JSON inválidos"}), 400    
+        return jsonify({"error": "Invalid JSON data"}), 400    
+
+@app.route("/update", methods=['PUT'])
+def update_product_by_id():
+    data = request.json
+    if data: 
+        service = ProductService()
+        service.validate_update_product(id=data.get('id'), price=data.get('price'))
+        return jsonify({"message": "Product updated successfully"}), 200
+    else:
+        return jsonify({"error": "Invalid data"}), 400 
+
+@app.route("/product/<int:product_id>", methods=['DELETE'])   
+def delete_product_by_id(product_id):
+    service = ProductService()
+    success = service.delete_product(product_id)
+    if success:
+        return jsonify({"message": "Product deleted successfully"}), 200
+    else:
+        return jsonify({"error": "Failed to delete product"}), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True)
