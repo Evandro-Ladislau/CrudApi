@@ -4,14 +4,14 @@ from Service.ProductService import ProductService
 
 app = Flask(__name__)
 
-@app.route("/list", methods=['GET'])
+service = ProductService()
+
+@app.route("/product", methods=['GET'])
 def list_products():
-    service = ProductService()
     return service.select_products()
 
 @app.route("/product/<int:product_id>", methods=['GET'])
 def get_product_by_id(product_id):
-    service = ProductService()
     product = service.select_product(product_id)
     if product:
         return jsonify({
@@ -23,22 +23,20 @@ def get_product_by_id(product_id):
     else:
         return jsonify({"error": "Product not exist"}), 400
 
-@app.route("/insert", methods=['POST'])
+@app.route("/product", methods=['POST'])
 def insert_product():
     data = request.json
     if data:
         product = Product(id=data.get('id'), name=data.get('name'), description=data.get('description'), price=data.get('price'))
-        service = ProductService()
         service.validate_insert_product(product)
         return jsonify({"message": "Product inserted successfully"}), 201
     else:
         return jsonify({"error": "Invalid JSON data"}), 400    
 
-@app.route("/update", methods=['PUT'])
+@app.route("/product", methods=['PUT'])
 def update_product_by_id():
     data = request.json
-    if data: 
-        service = ProductService()
+    if data:
         service.validate_update_product(id=data.get('id'), price=data.get('price'))
         return jsonify({"message": "Product updated successfully"}), 200
     else:
@@ -46,7 +44,6 @@ def update_product_by_id():
 
 @app.route("/product/<int:product_id>", methods=['DELETE'])   
 def delete_product_by_id(product_id):
-    service = ProductService()
     success = service.delete_product(product_id)
     if success:
         return jsonify({"message": "Product deleted successfully"}), 200

@@ -3,7 +3,7 @@ from Model.Product import Product
 
 class ProductStorage:
     def __init__ (self):
-        self.conn = sqlite3.connect("Store")
+        self.conn = sqlite3.connect("Store", check_same_thread=False)
         self.cursor = self.conn.cursor()
         self.create_table("CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(255), description VARCHAR(255),price DECIMAL(10,2))")
     
