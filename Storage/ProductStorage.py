@@ -16,11 +16,15 @@ class ProductStorage:
         self.conn.commit()
     
     def select(self):
-        query = "SELECT id, name, price FROM products ORDER BY name"
-        response = self.cursor.execute(query)
-        data = response.fetchall()
-        return data
-    
+        try:
+            query = "SELECT id, name, price FROM products ORDER BY name"
+            response = self.cursor.execute(query)
+            data = response.fetchall()
+            return data
+        except sqlite3.Error as e:
+            error_message = f"Error updating product: {e}"
+        return {"error": error_message}, 500
+           
     def select_by_id(self, id):
         query = "SELECT id, name, description, price FROM products WHERE id=?"
         response = self.cursor.execute(query, (id,))
@@ -29,14 +33,13 @@ class ProductStorage:
             product = Product(id=data[0], name=data[1], description=data[2], price=data[3])  
             return product
         else:
-            return None
+            return False
     
     def update(self, id, price):
         try:
             query = "UPDATE products SET price=? WHERE id=?"
             self.cursor.execute(query, (price, id, ))
             self.conn.commit()
-            print("Product update successfully.")
             return True
         except sqlite3.Error as e:
             print(f"Error updating product: {e}")

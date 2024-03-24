@@ -6,10 +6,14 @@ class ProductService:
         self.conn = ProductStorage()
     
     def validate_insert_product(self, Product):
-       if not Product.id or not Product.name or not Product.description or Product.price <= 0:
-           raise ValueError("Uma ou mais dado do produto invalido!")
-       else:
-           self.conn.insert(Product)
+        success = self.conn.select_by_id(Product.id)
+        if success:
+            raise ValueError("There is already a product registered with this code!") 
+        
+        if not Product.id or not Product.name or not Product.description or Product.price <= 0:
+            raise ValueError("One or more invalid product details!")
+        else:
+            self.conn.insert(Product)
            
     def select_product(self, id):
         return self.conn.select_by_id(id)
@@ -18,8 +22,11 @@ class ProductService:
         return self.conn.select()
     
     def validate_update_product(self, id, price):
-        if price <= 0:
-            raise ValueError("Valor inválido")
+        response = self.conn.select_by_id(id)
+        if response == False:
+            raise ValueError("This product does not exist!")
+        elif price <= 0 :
+            raise ValueError("Value must be greater than zero!")
         else:
             return self.conn.update(id, price)
     

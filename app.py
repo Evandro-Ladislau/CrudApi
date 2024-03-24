@@ -27,9 +27,12 @@ def get_product_by_id(product_id):
 def insert_product():
     data = request.json
     if data:
-        product = Product(id=data.get('id'), name=data.get('name'), description=data.get('description'), price=data.get('price'))
-        service.validate_insert_product(product)
-        return jsonify({"message": "Product inserted successfully"}), 201
+       try:
+            product = Product(id=data.get('id'), name=data.get('name'), description=data.get('description'), price=data.get('price'))
+            service.validate_insert_product(product)
+            return jsonify({"message": "Product inserted successfully"}), 201
+       except ValueError as e:
+            return jsonify({"message": str(e)})
     else:
         return jsonify({"error": "Invalid JSON data"}), 400    
 
@@ -37,8 +40,11 @@ def insert_product():
 def update_product_by_id():
     data = request.json
     if data:
-        service.validate_update_product(id=data.get('id'), price=data.get('price'))
-        return jsonify({"message": "Product updated successfully"}), 200
+       try: 
+            service.validate_update_product(id=data.get('id'), price=data.get('price'))
+            return jsonify({"message": "Product updated successfully"}), 200
+       except ValueError as e:
+            return jsonify({"error": str(e)}), 400
     else:
         return jsonify({"error": "Invalid data"}), 400 
 
